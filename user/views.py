@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm, SignUpForm
 from .models import ExtendUser
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 def login_account(request):
@@ -18,7 +19,7 @@ def login_account(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect(reverse('home'))  #
+                return redirect(reverse('home'))
             else:
                 message = 'Username or password is incorrect!'
 
@@ -31,18 +32,19 @@ def logout_account(request):
 
 
 def signup(request):
-    form = SignUpForm(request.POST, request.FILES)
-    if form.is_valid():
-        user = form.save()
-        user.refresh_from_db()
-        user.extenduser.image = form.cleaned_data.get('image')
-        user.extenduser.gender = form.cleaned_data.get('gender')
-        user.save()
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        login(request, user)
-        return redirect('home')
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()
+            user.extenduser.image = form.cleaned_data.get('image')
+            user.extenduser.gender = form.cleaned_data.get('gender')
+            user.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('home')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})

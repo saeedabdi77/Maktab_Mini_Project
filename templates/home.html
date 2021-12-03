@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+
+{% block content %}
+{% load static %}
+
+{% for post in posts %}
+{% if post.status == 'published' %}
+<div class="card my-5 p-3" style="width: 100%">
+    <div class="card-block">
+        <h1 class="card-title">{{post.title}}</h1>
+        <h3 class="card-subtitle text-muted">{{post.publisher.username}}</h3>
+    </div>
+    <img data-src="holder.js/100px180/?text=Image" alt="Image [100%x180]"
+         src="{{post.image.url}}"
+         data-holder-rendered="true" style=" display: block;">
+    <div class="card-block">
+        {% if post.caption %}
+        <hr>
+        <div class="text-center">{{post.caption}}</div>
+        <hr>
+        {% endif %}
+        {% if post.updated_at.datetime == post.created_at.datetime %}
+        <small class="card-text">{{post.created_at}}</small>
+        {% else %}
+        <small class="card-text">updated : {{post.updated_at}}</small>
+        {% endif %}
+        <a href="#" class="card-link">comments</a>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+{% endblock content %}

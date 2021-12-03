@@ -4,18 +4,27 @@
 
 {% block content %}
 {% load static %}
+
 <div class="row">
     <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
         <div class="card border-0 shadow rounded-3 my-5">
             <div class="card-body p-4 p-sm-5">
                 <h5 class="card-title text-center mb-5 fw-light fs-5">Sign In</h5>
+
                 <form method="POST">
                     {% csrf_token %}
-                    {{form.non_field_errors}}
+
                     {% if message %}
-                    <p style="color: red">{{message}}</p>
+                    <strong style="color: red">
+                        <ul class="errorlist">
+                            <li>{{message}}</li>
+                        </ul>
+                    </strong>
+
                     {% endif %}
+
                     <div class="form-floating mb-3">
+
                         <input type="text" class="form-control" id="id_username" name="username">
                         <label for="id_username">Username</label>
                     </div>
@@ -24,14 +33,15 @@
                         <label for="id_password">Password</label>
                     </div>
 
-<!--                    <div class="form-check mb-3">-->
-<!--                        <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">-->
-<!--                        <label class="form-check-label" for="rememberPasswordCheck">-->
-<!--                            Remember password-->
-<!--                        </label>-->
-<!--                    </div>-->
+                    <!--                    <div class="form-check mb-3">-->
+                    <!--                        <input class="form-check-input" type="checkbox" value="" id="rememberPasswordCheck">-->
+                    <!--                        <label class="form-check-label" for="rememberPasswordCheck">-->
+                    <!--                            Remember password-->
+                    <!--                        </label>-->
+                    <!--                    </div>-->
                     <div class="d-grid">
-                        <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit" style="width: 100%">Sign
+                        <button class="btn btn-primary btn-login text-uppercase fw-bold" type="submit"
+                                style="width: 100%">Sign
                             in
                         </button>
                     </div>
