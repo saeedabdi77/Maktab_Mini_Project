@@ -100,11 +100,13 @@
         <ul class="list-unstyled components">
             <p>Pages</p>
             <li class="active">
-                <a href="#menu">Home</a>
+                <a href="{% url 'home' %}">Home</a>
 
             </li>
             <li class="active">
-                <a href="#menu">Tags</a>
+                <a href="{% url 'category' %}">Category</a>
+            <li class="active">
+                <a href="{% url 'tags' %}">Tags</a>
 
             {% if user.is_authenticated %}
             <p>Pages</p>

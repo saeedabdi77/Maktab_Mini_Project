@@ -9,7 +9,6 @@ from django import forms
 
 # category model
 class Category(models.Model):
-    parent = models.ForeignKey('Category', blank=True, null=True, on_delete=models.PROTECT)
     title = models.CharField(max_length=50, unique=True)
 
     def __str__(self):

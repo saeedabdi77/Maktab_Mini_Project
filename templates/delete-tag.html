@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Delete {{tag.name}}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="col-md-12 my-3">
+            <form action="" method="post">
+                {% csrf_token %}
+
+                <p>مطمئن هستیدکه میخواهید دیلیت کنید داداش !؟ واقعا {{tag.name}} پاک میشه ها</p>
+                {{ form.as_p }}
+                <input type="submit" value="بزن بریم">
+                <a href="{%url 'tags' %}">برگشت به صفحه تگ ها</a>
+            </form>
+        </div>
+    </div>
+
+{% endblock content %}
