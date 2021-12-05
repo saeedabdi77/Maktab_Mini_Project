@@ -27,3 +27,17 @@ class DeleteTagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = []
+
+
+class CreatePostForm(forms.ModelForm):
+
+    class Meta:
+        model = Post
+        exclude = ['publisher', 'slug', 'likes']
+
+
+class UpdatePublishedPostForm(forms.ModelForm):
+
+    class Meta:
+        model = Post
+        exclude = ['publisher', 'slug', 'likes', 'status']

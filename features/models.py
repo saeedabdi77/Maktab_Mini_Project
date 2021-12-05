@@ -5,6 +5,10 @@ import random
 from django.db.models.signals import pre_save
 from django.contrib.auth import get_user_model
 from django import forms
+# import sys
+# sys.path.append("..")
+from user.models import ExtendUser
+
 
 
 # category model
@@ -16,7 +20,7 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
 
 
 # Post model
@@ -26,9 +30,9 @@ class Post(models.Model):
         ('published', 'published')
     )
     title = models.CharField(max_length=50)
-    caption = models.TextField(null=True, blank=True)
-    publisher = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    category = models.ManyToManyField(Category, blank=True)
+    caption = models.TextField()
+    publisher = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
+    category = models.ManyToManyField(Category)
     image = models.ImageField(upload_to='post-image')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

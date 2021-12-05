@@ -5,8 +5,11 @@
 
 <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="بزن بریم">
+    <div class="text-center">
+        {{ form}}
+
+        <input type="submit" class="btn btn-success" value="OK">
+    </div>
 </form>
 
 {% endblock content %}

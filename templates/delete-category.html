@@ -2,17 +2,20 @@
 {% block title %}Delete {{category.title}}{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="col-md-12 my-3">
-            <form action="" method="post">
-                {% csrf_token %}
-                
-                <p>مطمئن هستیدکه میخواهید دیلیت کنید داداش !؟ واقعا {{category.title}} پاک میشه ها</p>
-                {{ form.as_p }}
-                <input type="submit" value="بزن بریم">
-                <a href="{%url 'category' %}">برگشت به صفحه تگ ها</a>
-            </form>
-        </div>
+<div class="container">
+    <div class="col-md-12 my-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <div class="text-center">
+                <strong>Are you sure you want to delete {{category.title}} ?</strong>
+                <br>
+                <input class="btn btn-danger" type="submit" value="YES">
+                <a href="{%url 'tags' %}" class="btn btn-primary">NO</a>
+            </div>
+        </form>
+        </form>
     </div>
+</div>
 
 {% endblock content %}

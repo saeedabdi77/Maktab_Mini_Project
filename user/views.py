@@ -19,6 +19,9 @@ def login_account(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                next = request.GET.get('next')
+                if next:
+                    return redirect(request.GET.get('next'))
                 return redirect(reverse('home'))
             else:
                 message = 'Username or password is incorrect!'
@@ -33,7 +36,7 @@ def logout_account(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = SignUpForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
