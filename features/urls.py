@@ -3,6 +3,7 @@ from .views import *
 from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
+    path('', SearchPageView.as_view(), name="search"),
     path('home/', home, name="home"),
     path('categories/', CategoryList.as_view(), name="category"),
     path('categories/<str:title>/', category_detail, name="category-detail"),
@@ -19,4 +20,6 @@ urlpatterns = [
     path('update-published-post/<slug:slug>/', edit_published_post, name="update-published-post"),
     path('delete-post/<slug:slug>/', delete_post, name="delete-post"),
     path('my-posts/', MyPosts.as_view(), name="my-posts"),
+    # path('post-detail/<slug:slug>/', post_detail, name="post-detail"),
+    path('post-detail/<slug:slug>/', PostDetail.as_view(), name="post-detail"),
 ]

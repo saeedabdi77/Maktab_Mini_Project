@@ -6,11 +6,12 @@ from django.views import View
 from .models import Post, Comment, Category, Tag
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DeleteCategoryForm, EditCategoryForm, CreatePostForm, UpdatePublishedPostForm
-from .forms import DeleteTagForm, EditTagForm
+from .forms import DeleteTagForm, EditTagForm, CommentForm
 from django.urls import reverse
 from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 
 def home(request):
@@ -190,3 +191,40 @@ def delete_post(request, slug):
         return redirect(reverse('my-posts'))
 
     return render(request, 'delete-post.html', {'form': form, 'post': post})
+
+
+class SearchPageView(ListView):
+    template_name = "search.html"
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        q = self.request.GET.get('q')
+        if q:
+            queryset = queryset.filter(Q(title__contains=q) | Q(caption__contains=q))
+        return queryset
+
+
+class PostDetail(View):
+    # login_url = '/myblog/login/'
+    form = CommentForm
+
+    def get(self, request, slug):
+        post = Post.objects.get(slug=slug)
+        comments = post.comment_set.all()
+        return render(request, 'post-detail.html', {'post': post, 'comments': comments, 'form': self.form})
+
+    @method_decorator(login_required(login_url='/myblog/login'))
+    def post(self, request, slug):
+        form = self.form(request.POST)
+        if form.is_valid():
+            if request.POST.get('parent_id'):
+                form.instance.parent = Comment.objects.get(id=int(request.POST.get('parent_id')))
+            form.instance.publisher = request.user.extenduser
+            form.instance.post = Post.objects.get(slug=slug)
+            comment = form
+            comment.save()
+
+        post = Post.objects.get(slug=slug)
+        comments = post.comment_set.all()
+        return render(request, 'post-detail.html', {'post': post, 'comments': comments, 'form': self.form})

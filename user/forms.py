@@ -25,3 +25,24 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'image', 'gender', 'password1', 'password2')
+
+
+class UpdateProfilePhotoForm(forms.ModelForm):
+    class Meta:
+        model = ExtendUser
+        fields = ['image']
+
+
+class SetNewPasswordForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 != password2:
+            raise ValidationError(
+                "password1 and password2 are not equal")

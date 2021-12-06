@@ -47,10 +47,10 @@ class Post(models.Model):
 
 # comment model
 class Comment(models.Model):
-    parent = models.ForeignKey('Comment', blank=True, null=True, on_delete=models.PROTECT)
-    caption = models.TextField()
+    parent = models.ForeignKey('Comment', blank=True, null=True, on_delete=models.CASCADE)
+    text = models.TextField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    publisher = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    publisher = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

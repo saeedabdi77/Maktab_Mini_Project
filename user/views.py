@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm, UpdateProfilePhotoForm, SetNewPasswordForm
 from .models import ExtendUser
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 
 
 def login_account(request):
@@ -51,3 +53,40 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+
+class ChangeProfilePhoto(LoginRequiredMixin, View):
+    login_url = '/myblog/login/'
+    template_name = 'change-profile.html'
+    form = UpdateProfilePhotoForm
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'form': self.form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form(request.POST, request.FILES)
+        if form.is_valid():
+            user = request.user.extenduser
+            user.image = form.cleaned_data.get('image')
+            user.save()
+            return redirect(reverse('my-posts'))
+        return render(request, self.template_name, {'form': self.form})
+
+
+@login_required(login_url='/myblog/login')
+def set_new_password(request):
+    form = SetNewPasswordForm()
+    if request.method == "POST":
+        form = SetNewPasswordForm(request.POST)
+        if form.is_valid():
+            user = request.user
+            if user.check_password(form.cleaned_data.get('password')):
+                user.set_password(form.cleaned_data.get('password1'))
+                user.save()
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password1')
+                user = authenticate(username=username, password=password)
+                login(request, user)
+                return redirect(reverse('my-posts'))
+
+    return render(request, 'new-password.html', {'form': form})
