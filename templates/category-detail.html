@@ -11,7 +11,7 @@
 <div class="card my-5 p-5" style="width: 100%; border-color: blue">
     <div class="card-block">
         <h1 class="card-title" >{{post.title}}</h1>
-        <h3 class="card-subtitle text-muted">{{post.publisher.user.username}}</h3>
+        <a href="/myblog/profile/{{post.publisher.user.username}}/" class="card-subtitle text-muted">{{post.publisher.user.username}}</a>
     </div>
     <img data-src="holder.js/100px180/?text=Image" alt="Image [100%x180]"
          src="{{post.image.url}}"
@@ -29,7 +29,7 @@
         <hr>
         {% endif %}
         <small class="card-text">{{post.created_at}}</small>
-        <a href="#" class="card-link" style="float: right">comments</a>
+        <a href="/myblog/post-detail/{{post.slug}}/" class="card-link" style="float: right">comments</a>
     </div>
 </div>
 {% endif %}

@@ -20,6 +20,5 @@ urlpatterns = [
     path('update-published-post/<slug:slug>/', edit_published_post, name="update-published-post"),
     path('delete-post/<slug:slug>/', delete_post, name="delete-post"),
     path('my-posts/', MyPosts.as_view(), name="my-posts"),
-    # path('post-detail/<slug:slug>/', post_detail, name="post-detail"),
     path('post-detail/<slug:slug>/', PostDetail.as_view(), name="post-detail"),
 ]

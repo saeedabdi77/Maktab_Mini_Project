@@ -126,6 +126,11 @@
             {% endif %}
 
         </ul>
+        <ul class="list-unstyled components">
+            <li>
+        <a href="{% url 'get-message' %}">Contact us</a>
+            </li>
+            </ul>
 
 
     </nav>
@@ -172,7 +177,8 @@
 
                     </ul>
 
-                    <form class="form-inline mt-3 navbar-right justify-content-center" action="{% url 'search' %}" method="GET">
+                    <form class="form-inline mt-3 navbar-right justify-content-center" action="{% url 'search' %}"
+                          method="GET">
                         <input class="form-control " type="search" placeholder="Search" aria-label="Search" name="q">
                         <button class="btn btn-outline-success " type="submit">Search</button>
                     </form>

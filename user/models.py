@@ -6,6 +6,9 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
+User._meta.get_field('email')._unique = True
+
+
 class ExtendUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     GENDER_CHOICES = (
