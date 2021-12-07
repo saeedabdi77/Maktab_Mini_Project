@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.views import View
-from .models import Post, Comment, Category, Tag
+from .models import Post, Comment, Category, Tag, Like, DisLike
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import DeleteCategoryForm, EditCategoryForm, CreatePostForm, UpdatePublishedPostForm
 from .forms import DeleteTagForm, EditTagForm, CommentForm
@@ -12,6 +12,9 @@ from django.db.models import Count
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
 
 
 def home(request):
@@ -206,13 +209,27 @@ class SearchPageView(ListView):
 
 
 class PostDetail(View):
-    # login_url = '/myblog/login/'
     form = CommentForm
 
     def get(self, request, slug):
         post = Post.objects.get(slug=slug)
         comments = post.comment_set.all()
-        return render(request, 'post-detail.html', {'post': post, 'comments': comments, 'form': self.form})
+        likes = post.like_set.all()
+        dislikes = post.dislike_set.all()
+        if request.user.is_authenticated:
+            is_liked = False
+            if likes.filter(user=request.user.extenduser).exists():
+                is_liked = True
+            is_disliked = False
+            if dislikes.filter(user=request.user.extenduser).exists():
+                is_disliked = True
+            return render(request, 'post-detail.html',
+                          {'post': post, 'comments': comments, 'form': self.form, 'likes': len(likes),
+                           'dislikes': len(dislikes), 'is_liked': is_liked, 'is_disliked': is_disliked})
+        else:
+            return render(request, 'post-detail.html',
+                          {'post': post, 'comments': comments, 'form': self.form, 'likes': len(likes),
+                           'dislikes': len(dislikes)})
 
     @method_decorator(login_required(login_url='/myblog/login'))
     def post(self, request, slug):
@@ -227,4 +244,25 @@ class PostDetail(View):
 
         post = Post.objects.get(slug=slug)
         comments = post.comment_set.all()
-        return render(request, 'post-detail.html', {'post': post, 'comments': comments, 'form': self.form})
+        likes = post.like_set.all()
+        dislikes = post.dislike_set.all()
+        if request.POST.get('liked_id'):
+            if likes.filter(user=request.user.extenduser).exists():
+                Like.objects.get(post=post, user=request.user.extenduser).delete()
+            else:
+                Like.objects.create(post=post, user=request.user.extenduser)
+        if request.POST.get('disliked_id'):
+            if dislikes.filter(user=request.user.extenduser).exists():
+                DisLike.objects.get(post=post, user=request.user.extenduser).delete()
+            else:
+                DisLike.objects.create(post=post, user=request.user.extenduser)
+
+        is_liked = False
+        if likes.filter(user=request.user.extenduser).exists():
+            is_liked = True
+        is_disliked = False
+        if dislikes.filter(user=request.user.extenduser).exists():
+            is_disliked = True
+        return render(request, 'post-detail.html',
+                      {'post': post, 'comments': comments, 'form': self.form, 'likes': len(likes),
+                       'dislikes': len(dislikes), 'is_liked': is_liked, 'is_disliked': is_disliked})

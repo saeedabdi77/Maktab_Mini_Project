@@ -31,7 +31,27 @@
 
         <small class="card-text">{{post.created_at}}</small>
 
+
     </div>
+
+    <div class="row justify-content-end">
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="hidden" name="liked_id" value="1">
+            <input class="btn btn-success" type="submit" value="Like {{likes}}">
+
+
+        </form>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="disliked_id" value="1">
+            <input class="btn btn-danger" type="submit" value="Dislike {{dislikes}}">
+
+
+        </form>
+    </div>
+
     {% if comments %}
     <hr>
     <h4>comments:</h4>
@@ -69,6 +89,7 @@
     {% endif %}
 
     <form action="" method="post">
+        {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="form-group">
             <label for="id_text">Comment yor thoughts</label>

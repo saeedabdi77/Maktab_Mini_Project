@@ -10,7 +10,6 @@ from django import forms
 from user.models import ExtendUser
 
 
-
 # category model
 class Category(models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -39,7 +38,6 @@ class Post(models.Model):
     slug = models.SlugField(max_length=250, null=True, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     status = models.CharField(max_length=10, choices=status_choices)
-    likes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -53,6 +51,22 @@ class Comment(models.Model):
     publisher = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['post', 'user']
+
+
+class DisLike(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['post', 'user']
 
 
 # random number generate a string including a three digits number and a two digits number seperated by dash
