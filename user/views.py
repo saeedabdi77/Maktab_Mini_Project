@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import string
+from django.core.exceptions import ValidationError
 
 
 def login_account(request):
@@ -21,10 +22,8 @@ def login_account(request):
         form = LoginForm(request.POST)
         username = request.POST["username"]
         password = request.POST["password"]
-        print(form.is_valid())
         if form.is_valid():
             user = authenticate(request, username=username, password=password)
-            print(user)
             if user is not None:
                 login(request, user)
                 next = request.GET.get('next')
@@ -46,6 +45,10 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST, request.FILES)
         if form.is_valid():
+            email = form.cleaned_data.get('email')
+
+            if email and User.objects.filter(email=email).exists():
+                return render(request, 'signup.html', {'form': form, 'e_message': 'Email with this address already exists!'})
             user = form.save()
             user.refresh_from_db()
             user.extenduser.image = form.cleaned_data.get('image')
@@ -123,7 +126,6 @@ class ForgetPassword(View):
                 messages.error(request, 'email not found!')
                 return render(request, self.template_name, {'form': self.form})
             password = self.password_generator()
-            print(password)
             subject = "new password for my blog"
             message = password
             email_from = settings.EMAIL_HOST_USER
@@ -132,8 +134,6 @@ class ForgetPassword(View):
             user = User.objects.get(email=email)
             user.set_password(password)
             user.save()
-            print(user.username)
-            print(user.check_password(password))
             messages.success(request, 'New password is sent to your email')
             return redirect(reverse('login'))
         return render(request, self.template_name, {'form': self.form})
@@ -143,8 +143,6 @@ class ShowUserProfile(View):
     template_name = 'user-profile.html'
 
     def get(self, request, username):
-        print(username)
         user_profile = User.objects.get(username=username)
-        posts = user_profile.extenduser.post_set.all()
-        print(4989)
+        posts = user_profile.extenduser.post_set.all().order_by('-created_at')
         return render(request, self.template_name, {'user_profile': user_profile, 'posts': posts})

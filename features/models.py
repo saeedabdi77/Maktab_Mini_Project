@@ -10,7 +10,6 @@ from django import forms
 from user.models import ExtendUser
 
 
-# category model
 class Category(models.Model):
     title = models.CharField(max_length=50, unique=True)
 
@@ -22,7 +21,6 @@ class Tag(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
 
-# Post model
 class Post(models.Model):
     status_choices = (
         ('draft', 'draft'),
@@ -32,7 +30,7 @@ class Post(models.Model):
     caption = models.TextField()
     publisher = models.ForeignKey(ExtendUser, on_delete=models.CASCADE)
     category = models.ManyToManyField(Category)
-    image = models.ImageField(upload_to='post-image')
+    image = models.ImageField(upload_to='post')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=250, null=True, blank=True)
@@ -43,7 +41,6 @@ class Post(models.Model):
         return self.title
 
 
-# comment model
 class Comment(models.Model):
     parent = models.ForeignKey('Comment', blank=True, null=True, on_delete=models.CASCADE)
     text = models.TextField()
@@ -69,12 +66,10 @@ class DisLike(models.Model):
         unique_together = ['post', 'user']
 
 
-# random number generate a string including a three digits number and a two digits number seperated by dash
 def random_number_generator():
     return str(random.randint(100, 999)) + '-' + str(random.randint(10, 99))
 
 
-# function to make post slug unique
 def unique_slug_generator(instance, new_slug=None):
     if new_slug is not None:
         slug = new_slug

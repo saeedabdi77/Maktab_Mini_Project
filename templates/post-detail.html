@@ -64,7 +64,7 @@
                 <div class="fw-bold">{{comment.publisher.user.username}} :</div>
                 <p>
                     {% if comment.parent %}
-                    <a style="color: #0056b3">@{{comment.parent.publisher.user.username}}</a>
+                    <a href="/myblog/profile/{{comment.parent.publisher.user.username}}/" style="color: #0056b3">@{{comment.parent.publisher.user.username}}</a>
                     {% endif %}
                     {{comment.text}}</p>
             </div>

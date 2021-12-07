@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 urlpatterns = [
     path('', SearchPageView.as_view(), name="search"),
-    path('home/', home, name="home"),
+    path('home/', Home.as_view(), name="home"),
     path('categories/', CategoryList.as_view(), name="category"),
     path('categories/<str:title>/', category_detail, name="category-detail"),
     path('categories/edit/<str:title>/', edit_category, name="edit-category"),

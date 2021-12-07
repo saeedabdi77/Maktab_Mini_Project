@@ -15,12 +15,16 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
+from django.contrib import messages
+from django.core.paginator import Paginator
 
 
-def home(request):
-    posts = Post.objects.all().order_by('-created_at')
-    categories = Category.objects.all()
-    return render(request, 'home.html', {'posts': posts, 'categories': categories})
+class Home(ListView):
+    model = Post
+    queryset = Post.objects.all().order_by('-created_at')
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'home.html'
 
 
 class CategoryList(ListView):
@@ -31,7 +35,7 @@ class CategoryList(ListView):
 
 def category_detail(request, title):
     category = Category.objects.get(title=title)
-    posts = category.post_set.all()
+    posts = category.post_set.all().order_by('-created_at')
     return render(request, 'category-detail.html', {'category': category, 'posts': posts})
 
 
@@ -44,6 +48,7 @@ def edit_category(request, title):
         form = EditCategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Category edited!')
             return redirect(reverse('category'))
 
     return render(request, 'edit-category.html', {'form': form, 'category': category})
@@ -56,6 +61,7 @@ def delete_category(request, title):
     form = DeleteCategoryForm(instance=category)
     if request.method == "POST":
         category.delete()
+        messages.warning(request, 'Category deleted!')
         return redirect(reverse('category'))
 
     return render(request, 'delete-category.html', {'form': form, 'category': category})
@@ -72,7 +78,10 @@ class AddCategory(LoginRequiredMixin, View):
         post_form = self.form(request.POST)
         if post_form.is_valid():
             post_form.save()
+            messages.success(request, 'Category added!')
             return redirect(reverse('category'))
+        else:
+            messages.error(request, 'Category already exists!')
         return render(request, 'add-category.html', {'form': self.form})
 
 
@@ -85,7 +94,7 @@ class TagList(ListView):
 
 def tag_detail(request, name):
     tag = Tag.objects.get(name=name)
-    posts = tag.post_set.all()
+    posts = tag.post_set.all().order_by('-created_at')
     return render(request, 'tag-detail.html', {'tag': tag, 'posts': posts})
 
 
@@ -98,6 +107,7 @@ def edit_tag(request, name):
         form = EditTagForm(request.POST, instance=tag)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Tag edited!')
             return redirect(reverse('tags'))
 
     return render(request, 'edit-tag.html', {'form': form, 'tag': tag})
@@ -110,6 +120,7 @@ def delete_tag(request, name):
     form = DeleteTagForm(instance=tag)
     if request.method == "POST":
         tag.delete()
+        messages.warning(request, 'Tag deleted!')
         return redirect(reverse('tags'))
 
     return render(request, 'delete-tag.html', {'form': form, 'tag': tag})
@@ -124,9 +135,13 @@ class AddTag(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         post_form = self.form(request.POST)
+
         if post_form.is_valid():
             post_form.save()
+            messages.success(request, 'Tag added!')
             return redirect(reverse('tags'))
+        else:
+            messages.error(request, 'Tag already exists!')
         return render(request, 'add-tag.html', {'form': self.form})
 
 
